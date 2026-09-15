@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPhone 18 Self-Pay Order Form | Lilly</title>
+<style>
+  :root {
+    --lilly-red: #D50032;
+    --lilly-red-dark: #A5002A;
+    --ink: #1d1d1f;
+    --ink-soft: #6e6e73;
+    --line: #e5e5e7;
+    --bg: #f5f5f7;
+    --card: #ffffff;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--line);
+    padding: 16px 24px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .lilly-mark {
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    color: var(--lilly-red);
+  }
+  .program-tag {
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 40px 20px 100px; }
+  .hero { text-align: center; margin-bottom: 32px; }
+  .hero h1 { font-size: 34px; font-weight: 600; margin: 0 0 8px; letter-spacing: -0.5px; }
+  .hero p { color: var(--ink-soft); font-size: 16px; margin: 0; }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card h2 { font-size: 19px; margin: 0 0 16px; }
+
+  .model-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: start; }
+  .model-cell { display: flex; flex-direction: column; }
+  .duo-link { margin-top: 8px; text-align: center; font-size: 11px; font-weight: 500; color: var(--lilly-red); text-decoration: none; }
+  .duo-link:hover { text-decoration: underline; }
+  .model-option {
+    border: 2px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 8px;
+    text-align: center;
+    cursor: pointer;
+    background: #fafafa;
+    transition: border-color .15s, background .15s;
+  }
+  .model-option:hover { background: #f0f0f2; }
+  .model-option.selected { border-color: var(--lilly-red); background: #fff5f7; }
+  .phone-glyph {
+    width: 44px; height: 84px; margin: 0 auto 10px;
+    border-radius: 12px;
+    background: linear-gradient(160deg, #2c2c2e, #050505);
+    border: 2px solid #000;
+    position: relative;
+    transition: background .2s;
+  }
+  .phone-glyph::after {
+    content: "";
+    position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+    width: 18px; height: 5px; border-radius: 4px; background: rgba(0,0,0,.35);
+  }
+  .model-option.pro-max .phone-glyph { width: 50px; height: 94px; }
+  .phone-photo {
+    display: none;
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  .model-name { font-weight: 600; font-size: 13px; }
+  .model-price { color: var(--ink-soft); font-size: 12px; margin-top: 2px; }
+
+  .product-links { display: flex; gap: 18px; margin-top: 12px; font-size: 13px; flex-wrap: wrap; }
+  .product-links a { color: var(--lilly-red); text-decoration: none; font-weight: 500; }
+  .product-links a:hover { text-decoration: underline; }
+
+  .segmented { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .segmented button {
+    flex: 1; padding: 12px; border: none; background: #fafafa; cursor: pointer;
+    font-size: 14px; font-weight: 500; color: var(--ink);
+    border-right: 1px solid var(--line);
+  }
+  .segmented button:last-child { border-right: none; }
+  .segmented button.selected { background: var(--lilly-red); color: #fff; }
+  .segmented button[disabled] { opacity: .4; cursor: not-allowed; }
+  .segmented button .storage-price { display: block; font-size: 12px; font-weight: 400; opacity: .75; margin-top: 2px; }
+
+  .swatches { display: flex; gap: 12px; flex-wrap: wrap; }
+  .swatch { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+  .swatch-dot {
+    width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line);
+  }
+  .swatch.selected .swatch-dot { border-color: var(--lilly-red); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--lilly-red); }
+  .swatch span { font-size: 12px; color: var(--ink-soft); }
+  .swatch-dot.black { background: #1d1d1f; }
+  .swatch-dot.silver { background: #e3e4e5; }
+  .swatch-dot.burgundy { background: #5f2a3b; }
+  .swatch-dot.glacier { background: #cfe8ee; }
+  .swatch-dot.frost-white { background: linear-gradient(160deg, #f7f5f0, #d7d4cc); }
+  .swatch-dot.midnight { background: linear-gradient(160deg, #232c3a, #0d1119); }
+
+  .price-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fff5f7; border: 1px solid #f6c9d3; border-radius: 12px;
+    padding: 14px 18px; margin-top: 18px; font-weight: 600;
+  }
+  .price-bar .amount { color: var(--lilly-red); font-size: 20px; }
+
+  label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 6px; }
+  label:first-of-type { margin-top: 0; }
+  input[type=text], input[type=email] {
+    width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px;
+    font-size: 15px; font-family: inherit;
+  }
+  input:focus { outline: 2px solid var(--lilly-red); outline-offset: 1px; }
+
+  .ack { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; font-size: 13px; color: var(--ink-soft); }
+  .ack input { margin-top: 3px; }
+
+  .submit-btn {
+    width: 100%; padding: 15px; border: none; border-radius: 12px;
+    background: var(--lilly-red); color: #fff; font-size: 16px; font-weight: 600;
+    cursor: pointer; margin-top: 22px;
+  }
+  .submit-btn:hover { background: var(--lilly-red-dark); }
+  .submit-btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+  #status { margin-top: 16px; padding: 14px 16px; border-radius: 10px; font-size: 14px; display: none; }
+  #status.ok { display: block; background: #eafbea; border: 1px solid #bfe8bf; color: #1c6b1c; }
+  #status.err { display: block; background: #fdecec; border: 1px solid #f5b8b8; color: #a3262c; }
+
+  .confirmed { text-align: center; padding: 40px 10px; }
+  .confirmed h2 { font-size: 22px; margin-bottom: 8px; }
+  .confirmed p { color: var(--ink-soft); }
+
+  footer { text-align: center; color: var(--ink-soft); font-size: 12px; padding: 20px; }
+
+  .admin-panel { max-width: 720px; margin: 0 auto 24px; }
+  .admin-panel .card { border: 2px dashed var(--lilly-red); }
+  .admin-panel h2 { color: var(--lilly-red); }
+  .admin-panel p.note { font-size: 13px; color: var(--ink-soft); margin: 0 0 16px; }
+  .admin-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .admin-row:last-of-type { border-bottom: none; }
+  .admin-row .admin-label { flex: 1; font-size: 13px; font-weight: 500; }
+  .admin-row .admin-preview {
+    width: 40px; height: 40px; border-radius: 8px; object-fit: cover;
+    border: 1px solid var(--line); background: #fafafa; display: none;
+  }
+  .admin-row input[type=file] { font-size: 12px; max-width: 220px; }
+  .admin-panel textarea {
+    width: 100%; height: 140px; margin-top: 14px; font-family: monospace;
+    font-size: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+  }
+  .admin-panel .submit-btn { margin-top: 10px; }
+  .admin-status { font-size: 13px; margin-top: 8px; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="lilly-mark">Lilly</span>
+  <span class="program-tag">iPhone 18 Self-Pay Program</span>
+</header>
+
+<div class="admin-panel" id="admin-panel" style="display:none;">
+  <div class="card">
+    <h2>Admin: Manage Product Images</h2>
+    <p class="note">Upload a photo for each model/color combo. Photos preview live below in the form. When you're done, click "Generate code" and paste the result into the <code>MODEL_COLOR_IMAGES</code> line near the top of the script, replacing the empty <code>{}</code>. Then remove <code>?admin=1</code> from the URL before distributing this file — this panel is only for you.</p>
+    <div id="admin-rows"></div>
+    <button type="button" class="submit-btn" id="admin-generate-btn">Generate code</button>
+    <textarea id="admin-code" readonly placeholder="Generated code will appear here..."></textarea>
+    <div class="admin-status" id="admin-status"></div>
+  </div>
+</div>
+
+<main>
+  <div class="hero">
+    <h1>Choose your iPhone 18</h1>
+    <p>Available exclusively to invited WCS self-pay participants.</p>
+  </div>
+
+  <form id="order-form">
+    <div class="card">
+      <h2>Model</h2>
+      <div class="model-grid">
+        <div class="model-option" data-model="pro">
+          <div class="phone-glyph"><img class="phone-photo" alt=""></div>
+          <div class="model-name">iPhone 18 Pro</div>
+          <div class="model-price">From $300</div>
+        </div>
+        <div class="model-option pro-max" data-model="promax">
+          <div class="phone-glyph"><img class="phone-photo" alt=""></div>
+          <div class="model-name">iPhone 18 Pro Max</div>
+          <div class="model-price">From $400</div>
+        </div>
+        <div class="model-cell">
+          <div class="model-option" data-model="duo">
+            <div class="phone-glyph"><img class="phone-photo" alt=""></div>
+            <div class="model-name">iPhone Duo</div>
+            <div class="model-price">From $1,100</div>
+          </div>
+          <a class="duo-link" href="https://www.apple.com/iphone-duo/" target="_blank" rel="noopener">iPhone Duo on Apple.com ↗</a>
+        </div>
+      </div>
+      <div class="product-links">
+        <a href="https://www.apple.com/shop/buy-iphone/iphone-18-pro" target="_blank" rel="noopener">iPhone 18 Pro / Pro Max on Apple.com ↗</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Storage</h2>
+      <div class="segmented" id="storage-segmented">
+        <button type="button" data-storage="256">256GB<span class="storage-price">Select a model first</span></button>
+        <button type="button" data-storage="512">512GB<span class="storage-price">Select a model first</span></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Finish</h2>
+      <div class="swatches" id="finish-swatches">
+        <div class="swatch standard-finish" data-finish="Black"><div class="swatch-dot black"></div><span>Black</span></div>
+        <div class="swatch standard-finish" data-finish="Silver"><div class="swatch-dot silver"></div><span>Silver</span></div>
+        <div class="swatch standard-finish" data-finish="Burgundy"><div class="swatch-dot burgundy"></div><span>Burgundy</span></div>
+        <div class="swatch standard-finish" data-finish="Glacier"><div class="swatch-dot glacier"></div><span>Glacier</span></div>
+        <div class="swatch duo-finish" data-finish="Frost White" style="display:none;"><div class="swatch-dot frost-white"></div><span>Frost White</span></div>
+        <div class="swatch duo-finish" data-finish="Midnight" style="display:none;"><div class="swatch-dot midnight"></div><span>Midnight</span></div>
+      </div>
+      <div class="price-bar">
+        <span id="selection-summary">Select a model, storage size, and finish</span>
+        <span class="amount" id="price-display">--</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Your details</h2>
+      <label for="name">Full name</label>
+      <input type="text" id="name" required>
+
+      <label for="email">Lilly email</label>
+      <input type="email" id="email" required placeholder="you@lilly.com">
+
+      <label for="employeeId">Employee ID</label>
+      <input type="text" id="employeeId" required>
+
+      <label for="phoneNumber">Lilly Phone Number</label>
+      <input type="text" id="phoneNumber" required>
+
+      <div class="ack">
+        <input type="checkbox" id="acknowledge" required>
+        <label for="acknowledge" style="margin:0; font-weight:400;">
+          I understand this is a self-pay upgrade and I am required to provide a cashier's check for the self-pay cost I selected.
+        </label>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submit-btn">Submit order</button>
+      <div id="status"></div>
+    </div>
+  </form>
+
+  <div class="confirmed" id="confirmed" style="display:none;">
+    <h2>Order recorded</h2>
+    <p id="confirmed-detail"></p>
+  </div>
+</main>
+
+<footer>
+  Questions about this program? Contact your WCS self-pay program coordinator.
+</footer>
+
+<script>
+// ---- CONFIG: fill this in before distributing this file ----
+// Absolute URL of the SharePoint site that hosts the "iPhone18 SelfPay Orders" list,
+// e.g. "https://lillyco.sharepoint.com/sites/WCSSelfPay". This page must be deployed
+// (uploaded as a Site Page / added to a Site Pages library) inside that same site so
+// the visitor's normal Microsoft 365 login/session is used automatically — no token,
+// app registration, or extra license is required.
+const SP_SITE_URL = "";
+const SP_LIST_TITLE = "iPhone18 SelfPay Orders";
+// ---------------------------------------------------------------
+
+const PRICING = {
+  pro:    { name: "iPhone 18 Pro",     256: 300, 512: 500 },
+  promax: { name: "iPhone 18 Pro Max", 256: 400, 512: 600 },
+  duo:    { name: "iPhone Duo",        256: 1100, 512: 1300 },
+};
+
+const FINISH_COLORS = {
+  Black:    "linear-gradient(160deg, #3a3a3c, #050505)",
+  Silver:   "linear-gradient(160deg, #f4f4f6, #cfd0d3)",
+  Burgundy: "linear-gradient(160deg, #7d3e4f, #3f1826)",
+  Glacier:  "linear-gradient(160deg, #eaf6f9, #a9d8e4)",
+  "Frost White": "linear-gradient(160deg, #f7f5f0, #d7d4cc)",
+  Midnight: "linear-gradient(160deg, #232c3a, #0d1119)",
+};
+
+// Paste the code generated by the admin panel (open this file with ?admin=1) here,
+// replacing this empty object, to show real product photos instead of the color swatches.
+const MODEL_COLOR_IMAGES = {};
+
+const phoneGlyphs = document.querySelectorAll(".phone-glyph");
+
+const state = { model: null, storage: null, finish: null };
+
+const modelOptions = document.querySelectorAll(".model-option");
+const storageButtons = document.querySelectorAll("#storage-segmented button");
+const finishSwatches = document.querySelectorAll("#finish-swatches .swatch");
+const priceDisplay = document.getElementById("price-display");
+const selectionSummary = document.getElementById("selection-summary");
+const submitBtn = document.getElementById("submit-btn");
+const statusBox = document.getElementById("status");
+
+modelOptions.forEach(el => el.addEventListener("click", () => {
+  modelOptions.forEach(o => o.classList.remove("selected"));
+  el.classList.add("selected");
+  state.model = el.dataset.model;
+  updateStoragePrices();
+  updateFinishOptions();
+  updatePhonePhoto();
+  updateSummary();
+}));
+
+storageButtons.forEach(btn => btn.addEventListener("click", () => {
+  storageButtons.forEach(b => b.classList.remove("selected"));
+  btn.classList.add("selected");
+  state.storage = btn.dataset.storage;
+  updateSummary();
+}));
+
+finishSwatches.forEach(sw => sw.addEventListener("click", () => {
+  finishSwatches.forEach(s => s.classList.remove("selected"));
+  sw.classList.add("selected");
+  state.finish = sw.dataset.finish;
+  phoneGlyphs.forEach(g => g.style.background = FINISH_COLORS[state.finish]);
+  updatePhonePhoto();
+  updateSummary();
+}));
+
+function currentPrice() {
+  if (!state.model || !state.storage) return null;
+  return PRICING[state.model][state.storage];
+}
+
+function updateStoragePrices() {
+  storageButtons.forEach(btn => {
+    const priceLabel = btn.querySelector(".storage-price");
+    if (!state.model) {
+      priceLabel.textContent = "Select a model first";
+      return;
+    }
+    priceLabel.textContent = "$" + PRICING[state.model][btn.dataset.storage];
+  });
+}
+
+function updateFinishOptions() {
+  const isDuo = state.model === "duo";
+  finishSwatches.forEach(sw => {
+    const show = isDuo ? sw.classList.contains("duo-finish") : sw.classList.contains("standard-finish");
+    sw.style.display = show ? "" : "none";
+  });
+  const validFinishes = isDuo ? ["Frost White", "Midnight"] : ["Black", "Silver", "Burgundy", "Glacier"];
+  if (state.finish && !validFinishes.includes(state.finish)) {
+    state.finish = null;
+    finishSwatches.forEach(s => s.classList.remove("selected"));
+    phoneGlyphs.forEach(g => g.style.background = "");
+  }
+}
+
+function updatePhonePhoto() {
+  modelOptions.forEach(opt => {
+    const model = opt.dataset.model;
+    const img = opt.querySelector(".phone-photo");
+    const src = state.finish && MODEL_COLOR_IMAGES[model] && MODEL_COLOR_IMAGES[model][state.finish];
+    if (model === state.model && src) {
+      img.src = src;
+      img.style.display = "block";
+    } else {
+      img.style.display = "none";
+    }
+  });
+}
+
+function updateSummary() {
+  const price = currentPrice();
+  if (price != null) {
+    priceDisplay.textContent = "$" + price;
+  } else {
+    priceDisplay.textContent = "--";
+  }
+  const parts = [];
+  if (state.model) parts.push(PRICING[state.model].name);
+  if (state.storage) parts.push(state.storage + "GB");
+  if (state.finish) parts.push(state.finish);
+  selectionSummary.textContent = parts.length ? parts.join(" · ") : "Select a model, storage size, and finish";
+}
+
+async function getRequestDigest(siteUrl) {
+  const resp = await fetch(`${siteUrl}/_api/contextinfo`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Accept": "application/json;odata=verbose" }
+  });
+  if (!resp.ok) throw new Error("Could not get a request digest (" + resp.status + ")");
+  const data = await resp.json();
+  return data.d.GetContextWebInformation.FormDigestValue;
+}
+
+async function submitOrderToSharePoint(order) {
+  const siteUrl = SP_SITE_URL.replace(/\/$/, "");
+  const digest = await getRequestDigest(siteUrl);
+  const endpoint = `${siteUrl}/_api/web/lists/getbytitle('${encodeURIComponent(SP_LIST_TITLE)}')/items`;
+
+  const resp = await fetch(endpoint, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Accept": "application/json;odata=verbose",
+      "Content-Type": "application/json;odata=verbose",
+      "X-RequestDigest": digest
+    },
+    body: JSON.stringify({
+      "__metadata": { "type": "SP.Data.iPhone18SelfPayOrdersListItem" },
+      "Title": order.name,
+      "Name": order.name,
+      "Email": order.email,
+      "EmployeeID": order.employeeId,
+      "PhoneNumber": order.phoneNumber,
+      "Model": order.model,
+      "Storage": order.storage,
+      "Finish": order.finish,
+      "Price": order.price,
+      "SubmittedDateTime": order.submittedAt
+    })
+  });
+
+  if (!resp.ok) {
+    const errText = await resp.text().catch(() => "");
+    throw new Error("SharePoint list returned " + resp.status + " " + errText);
+  }
+}
+
+document.getElementById("order-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  statusBox.className = "";
+  statusBox.style.display = "none";
+
+  if (!state.model || !state.storage || !state.finish) {
+    statusBox.className = "err";
+    statusBox.textContent = "Please choose a model, storage size, and finish before submitting.";
+    return;
+  }
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const employeeId = document.getElementById("employeeId").value.trim();
+  const phoneNumber = document.getElementById("phoneNumber").value.trim();
+
+  if (!/^[^\s@]+@lilly\.com$/i.test(email)) {
+    statusBox.className = "err";
+    statusBox.textContent = "Please enter a valid @lilly.com email address.";
+    return;
+  }
+  if (!document.getElementById("acknowledge").checked) {
+    statusBox.className = "err";
+    statusBox.textContent = "Please check the acknowledgment box before submitting.";
+    return;
+  }
+  if (!SP_SITE_URL) {
+    statusBox.className = "err";
+    statusBox.textContent = "This form isn't fully set up yet. Please contact the program coordinator.";
+    return;
+  }
+
+  const price = currentPrice();
+  const modelName = PRICING[state.model].name;
+  const submittedAt = new Date().toISOString();
+
+  const orderData = {
+    name, email, employeeId, phoneNumber,
+    model: modelName, storage: state.storage + "GB", finish: state.finish,
+    price, submittedAt
+  };
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Submitting...";
+
+  try {
+    await submitOrderToSharePoint(orderData);
+
+    document.getElementById("order-form").style.display = "none";
+    document.getElementById("confirmed").style.display = "block";
+    document.getElementById("confirmed-detail").textContent =
+      `${name}, your order for ${modelName} ${state.storage}GB in ${state.finish} ($${price}) has been recorded.`;
+  } catch (err) {
+    statusBox.className = "err";
+    statusBox.textContent = "Something went wrong submitting your order. Please try again, or contact the program coordinator if this keeps happening.";
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit order";
+  }
+});
+
+// ---- Admin image panel (only visible with ?admin=1 in the URL) ----
+const ADMIN_COMBOS = [
+  ["pro", "Black"], ["pro", "Silver"], ["pro", "Burgundy"], ["pro", "Glacier"],
+  ["promax", "Black"], ["promax", "Silver"], ["promax", "Burgundy"], ["promax", "Glacier"],
+  ["duo", "Frost White"], ["duo", "Midnight"],
+];
+const MODEL_LABELS = { pro: "iPhone 18 Pro", promax: "iPhone 18 Pro Max", duo: "iPhone Duo" };
+
+if (new URLSearchParams(location.search).get("admin") === "1") {
+  document.getElementById("admin-panel").style.display = "block";
+
+  const adminRows = document.getElementById("admin-rows");
+  const adminCode = document.getElementById("admin-code");
+  const adminStatus = document.getElementById("admin-status");
+
+  ADMIN_COMBOS.forEach(([model, finish]) => {
+    const row = document.createElement("div");
+    row.className = "admin-row";
+
+    const preview = document.createElement("img");
+    preview.className = "admin-preview";
+    const existing = MODEL_COLOR_IMAGES[model] && MODEL_COLOR_IMAGES[model][finish];
+    if (existing) {
+      preview.src = existing;
+      preview.style.display = "block";
+    }
+
+    const label = document.createElement("span");
+    label.className = "admin-label";
+    label.textContent = `${MODEL_LABELS[model]} — ${finish}`;
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.addEventListener("change", () => {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        MODEL_COLOR_IMAGES[model] = MODEL_COLOR_IMAGES[model] || {};
+        MODEL_COLOR_IMAGES[model][finish] = reader.result;
+        preview.src = reader.result;
+        preview.style.display = "block";
+        updatePhonePhoto();
+        adminStatus.textContent = "";
+      };
+      reader.readAsDataURL(file);
+    });
+
+    row.appendChild(preview);
+    row.appendChild(label);
+    row.appendChild(input);
+    adminRows.appendChild(row);
+  });
+
+  document.getElementById("admin-generate-btn").addEventListener("click", async () => {
+    const code = "const MODEL_COLOR_IMAGES = " + JSON.stringify(MODEL_COLOR_IMAGES, null, 2) + ";";
+    adminCode.value = code;
+    try {
+      await navigator.clipboard.writeText(code);
+      adminStatus.textContent = "Copied to clipboard — paste it over the MODEL_COLOR_IMAGES line in the script.";
+    } catch (err) {
+      adminCode.select();
+      adminStatus.textContent = "Couldn't copy automatically — the code is selected below, copy it manually (Ctrl/Cmd+C).";
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>
