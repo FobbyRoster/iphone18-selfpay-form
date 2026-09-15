@@ -57,11 +57,11 @@
   }
   .card h2 { font-size: 19px; margin: 0 0 16px; }
 
-  .model-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: start; }
-  .model-cell { display: flex; flex-direction: column; }
-  .duo-link { margin-top: 8px; text-align: center; font-size: 11px; font-weight: 500; color: var(--lilly-red); text-decoration: none; }
-  .duo-link:hover { text-decoration: underline; }
+  .model-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: stretch; }
   .model-option {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     border: 2px solid var(--line);
     border-radius: 14px;
     padding: 14px 8px;
@@ -85,7 +85,6 @@
     position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
     width: 18px; height: 5px; border-radius: 4px; background: rgba(0,0,0,.35);
   }
-  .model-option.pro-max .phone-glyph { width: 50px; height: 94px; }
   .phone-glyph.has-photo {
     width: 90px; height: 130px;
     background: transparent;
@@ -224,17 +223,15 @@
           <div class="model-name">iPhone 18 Pro Max</div>
           <div class="model-price">From $400</div>
         </div>
-        <div class="model-cell">
-          <div class="model-option" data-model="duo">
-            <div class="phone-glyph"><img class="phone-photo" alt=""></div>
-            <div class="model-name">iPhone Duo</div>
-            <div class="model-price">From $1,100</div>
-          </div>
-          <a class="duo-link" href="https://www.apple.com/iphone-duo/" target="_blank" rel="noopener">iPhone Duo on Apple.com ↗</a>
+        <div class="model-option" data-model="duo">
+          <div class="phone-glyph"><img class="phone-photo" alt=""></div>
+          <div class="model-name">iPhone Duo</div>
+          <div class="model-price">From $1,100</div>
         </div>
       </div>
       <div class="product-links">
         <a href="https://www.apple.com/shop/buy-iphone/iphone-18-pro" target="_blank" rel="noopener">iPhone 18 Pro / Pro Max on Apple.com ↗</a>
+        <a href="https://www.apple.com/iphone-duo/" target="_blank" rel="noopener">iPhone Duo on Apple.com ↗</a>
       </div>
     </div>
 
