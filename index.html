@@ -78,7 +78,7 @@
     background: linear-gradient(160deg, #2c2c2e, #050505);
     border: 2px solid #000;
     position: relative;
-    transition: background .2s;
+    transition: background .2s, width .2s, height .2s;
   }
   .phone-glyph::after {
     content: "";
@@ -86,12 +86,17 @@
     width: 18px; height: 5px; border-radius: 4px; background: rgba(0,0,0,.35);
   }
   .model-option.pro-max .phone-glyph { width: 50px; height: 94px; }
+  .phone-glyph.has-photo {
+    width: 90px; height: 130px;
+    background: transparent;
+    border: none;
+  }
+  .phone-glyph.has-photo::after { display: none; }
   .phone-photo {
     display: none;
     position: absolute; inset: 0;
     width: 100%; height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
+    object-fit: contain;
   }
   .model-name { font-weight: 600; font-size: 13px; }
   .model-price { color: var(--ink-soft); font-size: 12px; margin-top: 2px; }
@@ -391,13 +396,16 @@ function updateFinishOptions() {
 function updatePhonePhoto() {
   modelOptions.forEach(opt => {
     const model = opt.dataset.model;
+    const glyph = opt.querySelector(".phone-glyph");
     const img = opt.querySelector(".phone-photo");
     const src = MODEL_IMAGES[model];
     if (src) {
       img.src = src;
       img.style.display = "block";
+      glyph.classList.add("has-photo");
     } else {
       img.style.display = "none";
+      glyph.classList.remove("has-photo");
     }
   });
 }
