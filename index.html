@@ -294,15 +294,11 @@
 </footer>
 
 <script>
-// ---- CONFIG: fill this in before distributing this file ----
-// Absolute URL of the SharePoint site that hosts the "iPhone18 SelfPay Orders" list,
-// e.g. "https://lillyco.sharepoint.com/sites/WCSSelfPay". This page must be deployed
-// (uploaded as a Site Page / added to a Site Pages library) inside that same site so
-// the visitor's normal Microsoft 365 login/session is used automatically — no token,
-// app registration, or extra license is required.
-const SP_SITE_URL = "";
-const SP_LIST_TITLE = "iPhone18 SelfPay Orders";
-// ---------------------------------------------------------------
+// ---- CONFIG ----
+// Paste the Worker URL from the Cloudflare dashboard here, e.g.
+// "https://iphone18-order-proxy.yoursubdomain.workers.dev"
+const ORDER_ENDPOINT = "https://iphone18-order-proxy.foster-rob-m.workers.dev/";
+// ----------------
 
 const PRICING = {
   pro:    { name: "iPhone 18 Pro",     256: 300, 512: 500 },
@@ -419,55 +415,23 @@ function updateSummary() {
   selectionSummary.textContent = parts.length ? parts.join(" · ") : "Select a model, storage size, and finish";
 }
 
-async function getRequestDigest(siteUrl) {
-  const resp = await fetch(`${siteUrl}/_api/contextinfo`, {
+async function submitOrder(order) {
+  const resp = await fetch(ORDER_ENDPOINT, {
     method: "POST",
-    credentials: "include",
-    headers: { "Accept": "application/json;odata=verbose" }
-  });
-  if (!resp.ok) throw new Error("Could not get a request digest (" + resp.status + ")");
-  const data = await resp.json();
-  return data.d.GetContextWebInformation.FormDigestValue;
-}
-
-async function submitOrderToSharePoint(order) {
-  const siteUrl = SP_SITE_URL.replace(/\/$/, "");
-  const digest = await getRequestDigest(siteUrl);
-  const endpoint = `${siteUrl}/_api/web/lists/getbytitle('${encodeURIComponent(SP_LIST_TITLE)}')/items`;
-
-  const resp = await fetch(endpoint, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Accept": "application/json;odata=verbose",
-      "Content-Type": "application/json;odata=verbose",
-      "X-RequestDigest": digest
-    },
-    body: JSON.stringify({
-      "__metadata": { "type": "SP.Data.iPhone18SelfPayOrdersListItem" },
-      "Title": order.name,
-      "Name": order.name,
-      "Email": order.email,
-      "EmployeeID": order.employeeId,
-      "PhoneNumber": order.phoneNumber,
-      "Model": order.model,
-      "Storage": order.storage,
-      "Finish": order.finish,
-      "Price": order.price,
-      "SubmittedDateTime": order.submittedAt
-    })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(order)
   });
 
   if (!resp.ok) {
     const errText = await resp.text().catch(() => "");
-    throw new Error("SharePoint list returned " + resp.status + " " + errText);
+    throw new Error("Order proxy returned " + resp.status + " " + errText);
   }
 }
 
 document.getElementById("order-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   statusBox.className = "";
-  statusBox.style.display = "none";
+  statusBox.style.display = "";
 
   if (!state.model || !state.storage || !state.finish) {
     statusBox.className = "err";
@@ -490,7 +454,7 @@ document.getElementById("order-form").addEventListener("submit", async (e) => {
     statusBox.textContent = "Please check the acknowledgment box before submitting.";
     return;
   }
-  if (!SP_SITE_URL) {
+  if (!ORDER_ENDPOINT) {
     statusBox.className = "err";
     statusBox.textContent = "This form isn't fully set up yet. Please contact the program coordinator.";
     return;
@@ -510,7 +474,7 @@ document.getElementById("order-form").addEventListener("submit", async (e) => {
   submitBtn.textContent = "Submitting...";
 
   try {
-    await submitOrderToSharePoint(orderData);
+    await submitOrder(orderData);
 
     document.getElementById("order-form").style.display = "none";
     document.getElementById("confirmed").style.display = "block";
